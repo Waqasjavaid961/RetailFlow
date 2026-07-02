@@ -1,0 +1,923 @@
+{
+  "info": {
+    "name": "RetailFlow - Professional API Collection",
+    "description": "Professional Postman collection for RetailFlow API with correct endpoint mappings, DTO structures, and comprehensive testing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "storeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "saleId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "customerContact",
+      "value": "03001234567",
+      "type": "string"
+    },
+    {
+      "key": "installmentAmount",
+      "value": "2000.00",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has success field', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('success');",
+                  "    pm.expect(json).to.have.property('data');",
+                  "});",
+                  "pm.test('User registered successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('email');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Retail Owner\",\n  \"email\": \"owner@retailflow.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Token received', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('token');",
+                  "    pm.expect(json.token).to.be.a('string').and.not.empty;",
+                  "    pm.environment.set('accessToken', json.token);",
+                  "    pm.collectionVariables.set('accessToken', json.token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner@retailflow.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Store Management",
+      "item": [
+        {
+          "name": "Create Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 CREATED', () => pm.response.to.have.status(201));",
+                  "pm.test('Store created with token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('id');",
+                  "    pm.expect(json.data).to.have.property('token');",
+                  "    pm.environment.set('accessToken', json.data.token);",
+                  "    pm.collectionVariables.set('accessToken', json.data.token);",
+                  "    pm.environment.set('storeId', String(json.data.id));",
+                  "    pm.collectionVariables.set('storeId', String(json.data.id));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeName\": \"Tech Hub Electronics\",\n  \"category\": \"electronics\",\n  \"contactNumber\": \"03001234567\",\n  \"address\": \"Main Market, Lahore\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"]
+            }
+          }
+        },
+        {
+          "name": "Select Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Store selected with new token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('id');",
+                  "    pm.expect(json.data).to.have.property('token');",
+                  "    pm.environment.set('accessToken', json.data.token);",
+                  "    pm.collectionVariables.set('accessToken', json.data.token);",
+                  "    pm.environment.set('storeId', String(json.data.id));",
+                  "    pm.collectionVariables.set('storeId', String(json.data.id));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/select?storeName=Tech Hub Electronics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "select"],
+              "query": [
+                { "key": "storeName", "value": "Tech Hub Electronics" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Store updated successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('storeName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeName\": \"Tech Hub Electronics Updated\",\n  \"category\": \"electronics\",\n  \"contactNumber\": \"03001234567\",\n  \"address\": \"Main Market, Lahore Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Store (me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Store details fetched', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('storeName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/stores/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores", "me"]
+            }
+          }
+        },
+        {
+          "name": "Get All Stores",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Stores list fetched', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/stores?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Store deleted successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/stores",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stores"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Product Management",
+      "item": [
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 CREATED', () => pm.response.to.have.status(201));",
+                  "pm.test('Product created successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('productName');",
+                  "    pm.expect(json.data).to.have.property('productId');",
+                  "    if (json.data.productId) {",
+                  "        pm.environment.set('productId', String(json.data.productId));",
+                  "        pm.collectionVariables.set('productId', String(json.data.productId));",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"electronics\",\n  \"productName\": \"Dell XPS 13\",\n  \"modelNumber\": \"XPS-13-9310\",\n  \"productQuantity\": 10,\n  \"price\": 150000.00,\n  \"description\": \"Core i7, 16GB RAM, 512GB SSD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "products"]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Product updated successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('productName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{productId}},\n  \"category\": \"electronics\",\n  \"productName\": \"Dell XPS 13 Updated\",\n  \"modelNumber\": \"XPS-13-9310\",\n  \"productQuantity\": 15,\n  \"price\": 145000.00,\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Products by Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Products fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/products?category=electronics&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "products"],
+              "query": [
+                { "key": "category", "value": "electronics" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Product found successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('productName');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/products/search?name=Dell XPS 13&category=electronics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "products", "search"],
+              "query": [
+                { "key": "name", "value": "Dell XPS 13" },
+                { "key": "category", "value": "electronics" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Inventory Management",
+      "item": [
+        {
+          "name": "Increase Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Stock increased successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('stock');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"productQuantity\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/inventory/increase",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "inventory", "increase"]
+            }
+          }
+        },
+        {
+          "name": "Decrease Stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Stock decreased successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('stock');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": {{productId}},\n  \"productQuantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/inventory/decrease",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "inventory", "decrease"]
+            }
+          }
+        },
+        {
+          "name": "Get Stock by Product ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Stock details fetched', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('stock');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/owner/inventory/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "owner", "inventory", "{{productId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Sales Management",
+      "item": [
+        {
+          "name": "Create Cash Sale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Cash sale created successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('paymentType');",
+                  "    pm.expect(json.data.paymentType).to.eql('cash');",
+                  "    if (json.data.saleId) {",
+                  "        pm.environment.set('saleId', String(json.data.saleId));",
+                  "        pm.collectionVariables.set('saleId', String(json.data.saleId));",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentType\": \"cash\",\n  \"customerCreateReq\": {\n    \"name\": \"Walk-in Customer\",\n    \"contactNumber\": \"03009998877\",\n    \"address\": \"Lahore\"\n  },\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shared/sales",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shared", "sales"]
+            }
+          }
+        },
+        {
+          "name": "Create Installment Sale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Installment sale created successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('paymentType');",
+                  "    pm.expect(json.data.paymentType).to.eql('installment');",
+                  "    if (json.data.customerCreateResp && json.data.customerCreateResp.contactNumber) {",
+                  "        pm.environment.set('customerContact', json.data.customerCreateResp.contactNumber);",
+                  "        pm.collectionVariables.set('customerContact', json.data.customerCreateResp.contactNumber);",
+                  "    }",
+                  "    if (json.data.saleId) {",
+                  "        pm.environment.set('saleId', String(json.data.saleId));",
+                  "        pm.collectionVariables.set('saleId', String(json.data.saleId));",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentType\": \"installment\",\n  \"customerCreateReq\": {\n    \"name\": \"Ali Khan\",\n    \"contactNumber\": \"{{customerContact}}\",\n    \"address\": \"Model Town Lahore\"\n  },\n  \"planReq\": {\n    \"downPayment\": 5000.00,\n    \"totalMonths\": 10\n  },\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 1\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shared/sales",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shared", "sales"]
+            }
+          }
+        },
+        {
+          "name": "Get Sale by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Sale fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('saleId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/shared/sales/{{saleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shared", "sales", "{{saleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get All Sales",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Sales list fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/shared/sales?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shared", "sales"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Refund Sale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Sale refunded successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"saleId\": {{saleId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/shared/sales/refund",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "shared", "sales", "refund"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Installment Management",
+      "item": [
+        {
+          "name": "Pay Installment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Installment paid successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('amountPaid');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactNumber\": \"{{customerContact}}\",\n  \"saleId\": {{saleId}},\n  \"amountPaid\": {{installmentAmount}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/installments/pay",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "installments", "pay"]
+            }
+          }
+        },
+        {
+          "name": "Get Installment Plan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Plan fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('monthlyInstallment');",
+                  "    pm.environment.set('installmentAmount', String(json.data.monthlyInstallment));",
+                  "    pm.collectionVariables.set('installmentAmount', String(json.data.monthlyInstallment));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/installments/plan?contactNumber={{customerContact}}&saleId={{saleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "installments", "plan"],
+              "query": [
+                { "key": "contactNumber", "value": "{{customerContact}}" },
+                { "key": "saleId", "value": "{{saleId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Installment Plans by Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Plans fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/installments/plans?contactNumber={{customerContact}}&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "installments", "plans"],
+              "query": [
+                { "key": "contactNumber", "value": "{{customerContact}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Installment Payments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Payments fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/installments/payments?contactNumber={{customerContact}}&saleId={{saleId}}&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "installments", "payments"],
+              "query": [
+                { "key": "contactNumber", "value": "{{customerContact}}" },
+                { "key": "saleId", "value": "{{saleId}}" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Store Installments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Store installments fetched successfully', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('content');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/installments/store?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "installments", "store"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
