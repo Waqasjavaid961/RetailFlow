@@ -217,11 +217,17 @@ Some features are planned for future versions of the project.
 
 ---
 
-# Author
+# Developer
 
 **Waqas Javaid**
 
 Java Backend Developer
+
+## Contact
+
+- 📧 Email: mailto:bhalliwaqas0@gmail.com
+- 💼 LinkedIn: https://www.linkedin.com/in/waqas-javaid-b738533aa/
+- 💻 GitHub: https://github.com/Waqasjavaid961
 
 This project was built as a learning project to improve backend development skills and understand real-world business workflows using Spring Boot.
     
