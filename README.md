@@ -95,8 +95,8 @@ RetailFlow is a backend retail management system that helps retail stores manage
   - Entity relationship diagram
   - the ERD diagram represent the database structure of retail flow
   - here is the link
-  - <p align="center">
-  📊 <b><a href="./ERD%20DIAGRAM/">Click Here to View ERD Diagram Folder</a></b>
+<p align="center">
+  🖼️ <b><a href="https://raw.githubusercontent.com/Waqasjavaid961/RetailFlow/main/ERD%20DIAGRAM/Untitled.svg" target="_blank">Click Here to View Full ERD Image</a></b>
 </p>
     
   
